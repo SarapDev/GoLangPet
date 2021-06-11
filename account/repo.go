@@ -22,7 +22,9 @@ func NewRepo(db *sql.DB, logger log.Logger) Repository {
 }
 
 func (r repo) CreateUser(context context.Context, user User) error {
-	sqlQuery := `INSERT INTO users (id, email, password) VALUE ($1, $2, $3)`
+	sqlQuery := `
+		INSERT INTO users (id, email, password)
+		VALUES (?, ?, ?)`
 
 	if user.Email == "" || user.Password == "" {
 		return RepoErr
@@ -39,7 +41,7 @@ func (r repo) CreateUser(context context.Context, user User) error {
 func (r repo) GetUser(context context.Context, id string) (string, error) {
 	var email string
 
-	err := r.db.QueryRow(`SELECT email FROM users WHERE id=$1`, id).Scan(&email)
+	err := r.db.QueryRow(`SELECT email FROM users WHERE id=?`, id).Scan(&email)
 	if err != nil {
 		return "", RepoErr
 	}
